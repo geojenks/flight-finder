@@ -5,6 +5,7 @@ from __future__ import annotations
 import hashlib
 import json
 import os
+import threading
 import time
 import urllib.request
 from datetime import date
@@ -62,7 +63,8 @@ class DiskCache:
         if not self.enabled:
             return
         self.dir.mkdir(parents=True, exist_ok=True)
-        tmp = self._path(key).with_suffix(".tmp")
+        # Unique temp name: threads may write the same key at the same time.
+        tmp = self._path(key).with_suffix(f".{os.getpid()}.{threading.get_ident()}.tmp")
         tmp.write_text(json.dumps(value), "utf-8")
         tmp.replace(self._path(key))
 

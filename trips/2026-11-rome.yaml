@@ -1,0 +1,24 @@
+# Bristol (or London) -> Rome and back, week beginning Mon 23 Nov 2026,
+# ~5 days, ideally including the Friday night (27 Nov).
+#
+#   flightfinder search trips/2026-11-rome.yaml
+
+name: Rome (week of 23 Nov 2026)
+currency: GBP
+value_of_time: 10
+modes: [flight]
+
+start:
+  from:
+    - bristol
+    # Getting to London from Bristol: coach ~£20 and ~2h30 each way.
+    - {place: london, extra_cost: 20, extra_minutes: 150}
+  depart: 2026-11-23..2026-11-28
+
+stops:
+  - {place: rome, nights: 4-5}
+
+end:
+  to:
+    - bristol
+    - {place: london, extra_cost: 20, extra_minutes: 150}
