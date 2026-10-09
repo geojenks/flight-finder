@@ -6,6 +6,7 @@ heavy use, so results are cached and requests are spaced out.
 
 from __future__ import annotations
 
+import json
 import threading
 import time
 from datetime import date, datetime
@@ -20,7 +21,7 @@ class GoogleFlightsProvider(Provider):
     modes = (FLIGHT,)
 
     def __init__(self, currency: str = "GBP", max_stops: int = 1,
-                 use_cache: bool = True, min_interval: float = 1.5, keep: int = 5):
+                 use_cache: bool = True, min_interval: float = 1.5, keep: int = 8):
         try:
             import fast_flights  # noqa: F401
         except ImportError as exc:
@@ -41,7 +42,7 @@ class GoogleFlightsProvider(Provider):
         cached = self.cache.get(key)
         if cached is not None:
             return cached
-        from fast_flights import FlightQuery, FlightsNotFound, Passengers, create_query, get_flights
+        from fast_flights import FlightQuery, Passengers, create_query, fetch_flights_html
 
         with self._lock:  # be polite: one request at a time, spaced out
             wait = self._last + self.min_interval - time.monotonic()
@@ -56,36 +57,22 @@ class GoogleFlightsProvider(Provider):
                 language="en-GB",
                 currency=self.currency,
             )
-            try:
-                result = get_flights(query)
-            except FlightsNotFound:
-                result = []
-            except Exception as exc:
-                self.errors.append(f"{o}->{d} {day}: {exc}")
+            rows = None
+            for attempt in range(2):  # Google sometimes serves an empty page; retry once
+                try:
+                    rows = parse_results(fetch_flights_html(query))
+                    break
+                except Exception as exc:
+                    if attempt:
+                        self.errors.append(f"{o}->{d} {day}: {exc}")
+                    else:
+                        time.sleep(3 * self.min_interval)
+                finally:
+                    self._last = time.monotonic()
+            if rows is None:
                 return []
-            finally:
-                self._last = time.monotonic()
 
-        rows = []
-        for f in result:
-            segs = f.flights
-            if not segs or not f.price:
-                continue
-            first, last = segs[0], segs[-1]
-            dep_date = date(*first.departure.date)
-            arr_date = date(*last.arrival.date)
-            rows.append({
-                "price": f.price,
-                "airlines": list(f.airlines),
-                "from": first.from_airport.code,
-                "to": last.to_airport.code,
-                "dep": "%02d:%02d" % first.departure.time,
-                "arr": "%02d:%02d" % last.arrival.time,
-                "offset": (arr_date - dep_date).days,
-                "elapsed": _elapsed(first, last),
-                "air": sum(s.duration or 0 for s in segs),
-                "stops": len(segs) - 1,
-            })
+        rows = [r for r in rows if r["from"] == o and r["to"] == d]
         rows.sort(key=lambda r: r["price"])
         rows = rows[: self.keep]
         self.cache.put(key, rows)
@@ -125,11 +112,56 @@ class GoogleFlightsProvider(Provider):
         )
 
 
-def _elapsed(first, last) -> int:
-    """Departure-to-arrival minutes on the local clocks (0 if unknown)."""
-    try:
-        dep = datetime(*first.departure.date, *first.departure.time)
-        arr = datetime(*last.arrival.date, *last.arrival.time)
-        return int((arr - dep).total_seconds() // 60)
-    except (TypeError, ValueError):
-        return 0
+def _time(value) -> tuple[int, int]:
+    """Google drops zero components: [8] is 08:00, [None, 31] is 00:31."""
+    padded = [*(value or []), None, None]
+    return (padded[0] or 0, padded[1] or 0)
+
+
+def parse_results(html: str) -> list[dict]:
+    """Read flights out of a Google Flights results page.
+
+    fast-flights' own parser only reads the "other flights" list and crashes on
+    unpriced entries, so this reads both the "best" (section 2) and "other"
+    (section 3) lists and skips anything without a price.
+    """
+    from selectolax.lexbor import LexborHTMLParser
+
+    script = LexborHTMLParser(html).css_first(r"script.ds\:1")
+    if script is None:
+        raise ValueError("no results data in page (blocked or consent page?)")
+    data = script.text().split("data:", 1)[1].rsplit(",", 1)[0]
+    if data.endswith("errorHasStatus: true"):
+        return []
+    payload = json.loads(data)
+
+    rows = []
+    for section in (2, 3):
+        try:
+            entries = payload[section][0] or []
+        except (IndexError, TypeError):
+            continue
+        for k in entries:
+            try:
+                flight, price = k[0], k[1][0][1]
+                segs = flight[2]
+            except (IndexError, TypeError):
+                continue
+            if not price or not segs:
+                continue
+            first, last = segs[0], segs[-1]
+            dep = datetime(*first[20], *_time(first[8]))
+            arr = datetime(*last[21], *_time(last[10]))
+            rows.append({
+                "price": price,
+                "airlines": list(flight[1] or []),
+                "from": first[3],
+                "to": last[6],
+                "dep": dep.strftime("%H:%M"),
+                "arr": arr.strftime("%H:%M"),
+                "offset": (arr.date() - dep.date()).days,
+                "elapsed": int((arr - dep).total_seconds() // 60),
+                "air": sum(s[11] or 0 for s in segs),
+                "stops": len(segs) - 1,
+            })
+    return rows
