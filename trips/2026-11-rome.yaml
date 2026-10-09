@@ -16,9 +16,10 @@ start:
   depart: 2026-11-23..2026-11-28
 
 stops:
-  - {place: rome, nights: 4-5}
+  - {place: rome, nights: 2-6}
 
 end:
   to:
     - bristol
     - {place: london, extra_cost: 20, extra_minutes: 150}
+  depart: 2026-11-26..2026-11-29   # home by Sun 29 at the latest
