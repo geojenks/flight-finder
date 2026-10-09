@@ -1,0 +1,304 @@
+# Curated train / coach routes.
+#
+# There is no free, open fare API for European rail and coach, so these are
+# GUIDE prices: `from` is the cheapest advance fare usually seen, `typical` is
+# what you'll more often pay booking a few weeks out. The planner scores with
+# `typical` and shows both. Always check the operator before booking.
+#
+# Fields
+#   from, to        place keys (see places.yaml); add `both_ways: true` to mirror
+#   from_terminal / to_terminal   terminal codes in those places
+#   mode            train | night-train | coach
+#   duration        e.g. 4h05 (terminal to terminal)
+#   buffer          minutes to allow at the terminal (check-in etc.)
+#   days            omitted = daily, or a list like [mon, wed, fri]
+#   depart / arrive local times (optional); arrive_day_offset: 1 for overnight
+#   valid           list of {from, to} date ranges when this entry applies
+#   price           {from, typical, currency}
+#   verify          true = schedule is uncertain; the report tells you to check
+#
+# Researched October 2026. Sources are in the notes / README.
+
+- id: gwr-bristol-london
+  from: bristol
+  to: london
+  both_ways: true
+  from_terminal: BRI
+  to_terminal: PAD
+  mode: train
+  operator: GWR
+  duration: 1h45
+  buffer: 15
+  price: {from: 27, typical: 55, currency: GBP}
+  url: https://www.gwr.com
+  notes: Advance singles are cheapest; off-peak walk-up is much dearer.
+
+- id: nx-bristol-london
+  from: bristol
+  to: london
+  both_ways: true
+  from_terminal: BRC
+  to_terminal: VCS
+  mode: coach
+  operator: National Express / Megabus / FlixBus
+  duration: 2h40
+  buffer: 15
+  price: {from: 8, typical: 18, currency: GBP}
+  url: https://www.nationalexpress.com
+
+- id: eurostar-london-amsterdam
+  from: london
+  to: amsterdam
+  both_ways: true
+  from_terminal: STP
+  to_terminal: ASC
+  mode: train
+  operator: Eurostar (direct)
+  duration: 4h05
+  buffer: 75
+  price: {from: 39, typical: 85, currency: GBP}
+  url: https://www.eurostar.com
+  notes: >-
+    About 3-5 direct trains a day. Arrive 60-90 min early at St Pancras; the
+    EU Entry/Exit System can add time at the border.
+
+- id: eurostar-london-paris
+  from: london
+  to: paris
+  both_ways: true
+  from_terminal: STP
+  to_terminal: PNO
+  mode: train
+  operator: Eurostar
+  duration: 2h20
+  buffer: 75
+  price: {from: 39, typical: 80, currency: GBP}
+  url: https://www.eurostar.com
+
+- id: eurostar-london-brussels
+  from: london
+  to: brussels
+  both_ways: true
+  from_terminal: STP
+  to_terminal: BMI
+  mode: train
+  operator: Eurostar
+  duration: 2h00
+  buffer: 75
+  price: {from: 39, typical: 75, currency: GBP}
+  url: https://www.eurostar.com
+
+- id: flix-london-amsterdam-night
+  from: london
+  to: amsterdam
+  both_ways: true
+  from_terminal: VCS
+  to_terminal: ASL
+  mode: coach
+  operator: FlixBus (overnight, via ferry)
+  duration: 11h30
+  depart: "20:30"
+  arrive: "08:00"
+  arrive_day_offset: 1
+  buffer: 20
+  price: {from: 25, typical: 45, currency: GBP}
+  url: https://www.flixbus.co.uk
+  verify: true
+  notes: Times vary by day; check the current timetable.
+
+# --- Amsterdam <-> Berlin -------------------------------------------------
+# DB is rebuilding Hanover-Berlin: the line is closed Oct-Dec 2026, so direct
+# ICEs run via Hamburg (~70 min slower), and some need a change at Hanover.
+
+- id: ice-amsterdam-berlin
+  from: amsterdam
+  to: berlin
+  both_ways: true
+  from_terminal: ASC
+  to_terminal: BHF
+  mode: train
+  operator: NS / DB ICE (direct)
+  duration: 5h45
+  buffer: 15
+  valid: [{to: 2026-10-01}, {from: 2027-01-01}]
+  price: {from: 38, typical: 65, currency: EUR}
+  url: https://www.nsinternational.com
+  notes: About 6-7 direct trains a day. Seat reservation ~EUR 5.50 extra.
+
+- id: ice-amsterdam-berlin-works-2026
+  from: amsterdam
+  to: berlin
+  both_ways: true
+  from_terminal: ASC
+  to_terminal: BHF
+  mode: train
+  operator: NS / DB ICE (diverted via Hamburg)
+  duration: 7h00
+  buffer: 15
+  valid: [{from: 2026-10-02, to: 2026-12-31}]
+  price: {from: 38, typical: 70, currency: EUR}
+  url: https://www.nsinternational.com
+  verify: true
+  notes: >-
+    Hanover-Berlin closed for rebuilding Oct-Dec 2026: 4 direct ICEs a day run
+    via Hamburg-Harburg (~70 min slower), the rest need a change at Hanover.
+    26-30 Oct 2026 Dutch works also reroute trains via the Hanzelijn.
+
+- id: european-sleeper-ams-ber
+  from: amsterdam
+  to: berlin
+  from_terminal: ASC
+  to_terminal: BHF
+  mode: night-train
+  operator: European Sleeper
+  duration: 7h35
+  depart: "22:34"
+  arrive: "06:10"
+  arrive_day_offset: 1
+  days: [mon, wed, fri]
+  buffer: 20
+  price: {from: 49, typical: 99, currency: EUR}
+  url: https://www.europeansleeper.eu
+  verify: true
+  notes: Seat from ~EUR 49, couchette/sleeper more. Check routing during the Oct-Dec 2026 Hanover-Berlin closure.
+
+- id: european-sleeper-ber-ams
+  from: berlin
+  to: amsterdam
+  from_terminal: BHF
+  to_terminal: ASC
+  mode: night-train
+  operator: European Sleeper
+  duration: 7h40
+  depart: "22:48"
+  arrive: "06:26"
+  arrive_day_offset: 1
+  days: [tue, thu, sun]
+  buffer: 20
+  price: {from: 49, typical: 99, currency: EUR}
+  url: https://www.europeansleeper.eu
+  verify: true
+  notes: Seat from ~EUR 49, couchette/sleeper more. Check routing during the Oct-Dec 2026 Hanover-Berlin closure.
+
+- id: govolta-ams-ber
+  from: amsterdam
+  to: berlin
+  from_terminal: ASC
+  to_terminal: BHF
+  mode: train
+  operator: GoVolta (low-cost, to Berlin Spandau)
+  duration: 6h45
+  depart: "08:34"
+  arrive: "15:20"
+  buffer: 15
+  price: {from: 10, typical: 35, currency: EUR}
+  url: https://www.govolta.com
+  verify: true
+  # Not listed during the Hanover-Berlin closure: no confirmed timetable for it.
+  valid: [{to: 2026-10-01}, {from: 2027-01-01}]
+  notes: Frequency was growing through 2026 (6 days/week from July, daily planned from Dec).
+
+- id: govolta-ber-ams
+  from: berlin
+  to: amsterdam
+  from_terminal: BHF
+  to_terminal: ASC
+  mode: train
+  operator: GoVolta (low-cost, from Berlin Spandau)
+  duration: 8h10
+  depart: "15:46"
+  arrive: "23:55"
+  buffer: 15
+  price: {from: 10, typical: 35, currency: EUR}
+  url: https://www.govolta.com
+  verify: true
+  # Not listed during the Hanover-Berlin closure: no confirmed timetable for it.
+  valid: [{to: 2026-10-01}, {from: 2027-01-01}]
+  notes: Frequency was growing through 2026 (6 days/week from July, daily planned from Dec).
+
+- id: flix-amsterdam-berlin
+  from: amsterdam
+  to: berlin
+  both_ways: true
+  from_terminal: ASL
+  to_terminal: ZOB
+  mode: coach
+  operator: FlixBus
+  duration: 9h30
+  buffer: 15
+  price: {from: 20, typical: 40, currency: EUR}
+  url: https://www.flixbus.com
+
+- id: flix-amsterdam-berlin-night
+  from: amsterdam
+  to: berlin
+  both_ways: true
+  from_terminal: ASL
+  to_terminal: ZOB
+  mode: coach
+  operator: FlixBus (overnight)
+  duration: 9h45
+  depart: "22:15"
+  arrive: "08:00"
+  arrive_day_offset: 1
+  buffer: 15
+  price: {from: 20, typical: 40, currency: EUR}
+  url: https://www.flixbus.com
+  verify: true
+  notes: Overnight departures exist most days; exact times vary.
+
+# --- To / from Barcelona -------------------------------------------------
+
+- id: rail-amsterdam-barcelona
+  from: amsterdam
+  to: barcelona
+  both_ways: true
+  from_terminal: ASC
+  to_terminal: BSA
+  mode: train
+  operator: Eurostar + TGV/Renfe via Paris
+  duration: 11h30
+  buffer: 30
+  price: {from: 110, typical: 200, currency: EUR}
+  url: https://www.thetrainline.com
+  notes: Change stations in Paris (Gare du Nord -> Gare de Lyon). A long day, but scenic.
+
+- id: rail-london-barcelona
+  from: london
+  to: barcelona
+  both_ways: true
+  from_terminal: STP
+  to_terminal: BSA
+  mode: train
+  operator: Eurostar + TGV/Renfe via Paris
+  duration: 11h00
+  buffer: 75
+  price: {from: 110, typical: 220, currency: GBP}
+  url: https://www.thetrainline.com
+  notes: Change stations in Paris (Gare du Nord -> Gare de Lyon).
+
+- id: tgv-paris-barcelona
+  from: paris
+  to: barcelona
+  both_ways: true
+  from_terminal: PLY
+  to_terminal: BSA
+  mode: train
+  operator: SNCF TGV / Renfe AVE (direct)
+  duration: 6h40
+  buffer: 20
+  price: {from: 39, typical: 100, currency: EUR}
+  url: https://www.sncf-connect.com
+
+- id: ec-berlin-prague
+  from: berlin
+  to: prague
+  both_ways: true
+  from_terminal: BHF
+  to_terminal: PHL
+  mode: train
+  operator: DB / ČD EuroCity
+  duration: 4h20
+  buffer: 15
+  price: {from: 20, typical: 40, currency: EUR}
+  url: https://www.bahn.com

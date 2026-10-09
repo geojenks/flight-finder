@@ -1,0 +1,163 @@
+# Places the planner knows about. Each place has terminals; transfer_minutes and
+# transfer_cost are a typical city-centre <-> terminal journey by public
+# transport (one way, one adult, local currency). They feed the door-to-door
+# comparison, so a "cheap" flight from a far-off airport is judged fairly.
+#
+# Add your own places here, or in a places file passed with --places.
+
+bristol:
+  name: Bristol
+  country: GB
+  currency: GBP
+  terminals:
+    - {code: BRS, name: Bristol Airport, kind: airport, minutes: 35, cost: 9}
+    - {code: BRI, name: Bristol Temple Meads, kind: station, minutes: 10, cost: 0}
+    - {code: BRC, name: Bristol Coach Station, kind: coach, minutes: 10, cost: 0}
+
+london:
+  name: London
+  country: GB
+  currency: GBP
+  terminals:
+    - {code: LHR, name: Heathrow, kind: airport, minutes: 50, cost: 13}
+    - {code: LGW, name: Gatwick, kind: airport, minutes: 45, cost: 20}
+    - {code: STN, name: Stansted, kind: airport, minutes: 55, cost: 21}
+    - {code: LTN, name: Luton, kind: airport, minutes: 50, cost: 20}
+    - {code: LCY, name: London City, kind: airport, minutes: 30, cost: 4}
+    - {code: SEN, name: Southend, kind: airport, minutes: 65, cost: 20}
+    - {code: STP, name: London St Pancras International, kind: station, minutes: 15, cost: 3}
+    - {code: PAD, name: London Paddington, kind: station, minutes: 15, cost: 3}
+    - {code: VCS, name: London Victoria Coach Station, kind: coach, minutes: 15, cost: 3}
+
+manchester:
+  name: Manchester
+  country: GB
+  currency: GBP
+  terminals:
+    - {code: MAN, name: Manchester Airport, kind: airport, minutes: 25, cost: 5}
+    - {code: MCV, name: Manchester Piccadilly, kind: station, minutes: 5, cost: 0}
+
+edinburgh:
+  name: Edinburgh
+  country: GB
+  currency: GBP
+  terminals:
+    - {code: EDI, name: Edinburgh Airport, kind: airport, minutes: 30, cost: 8}
+    - {code: EDB, name: Edinburgh Waverley, kind: station, minutes: 5, cost: 0}
+
+dublin:
+  name: Dublin
+  country: IE
+  currency: EUR
+  terminals:
+    - {code: DUB, name: Dublin Airport, kind: airport, minutes: 30, cost: 9}
+
+amsterdam:
+  name: Amsterdam
+  country: NL
+  currency: EUR
+  terminals:
+    - {code: AMS, name: Schiphol, kind: airport, minutes: 20, cost: 6.5}
+    - {code: ASC, name: Amsterdam Centraal, kind: station, minutes: 10, cost: 0}
+    - {code: ASL, name: Amsterdam Sloterdijk (coaches), kind: coach, minutes: 20, cost: 3.5}
+
+berlin:
+  name: Berlin
+  country: DE
+  currency: EUR
+  terminals:
+    - {code: BER, name: Berlin Brandenburg, kind: airport, minutes: 40, cost: 5}
+    - {code: BHF, name: Berlin Hauptbahnhof, kind: station, minutes: 15, cost: 3.8}
+    - {code: ZOB, name: Berlin ZOB (coach station), kind: coach, minutes: 30, cost: 3.8}
+
+barcelona:
+  name: Barcelona
+  country: ES
+  currency: EUR
+  terminals:
+    - {code: BCN, name: Barcelona El Prat, kind: airport, minutes: 35, cost: 7.5}
+    - {code: GRO, name: Girona (Ryanair, ~1h15 by bus), kind: airport, minutes: 80, cost: 19}
+    - {code: BSA, name: Barcelona Sants, kind: station, minutes: 15, cost: 2.6}
+    - {code: BNO, name: Barcelona Nord (coaches), kind: coach, minutes: 15, cost: 2.6}
+
+paris:
+  name: Paris
+  country: FR
+  currency: EUR
+  terminals:
+    - {code: CDG, name: Charles de Gaulle, kind: airport, minutes: 45, cost: 14}
+    - {code: ORY, name: Orly, kind: airport, minutes: 40, cost: 14}
+    - {code: BVA, name: Beauvais (Ryanair, ~1h15 by coach), kind: airport, minutes: 90, cost: 17}
+    - {code: PNO, name: Paris Gare du Nord, kind: station, minutes: 15, cost: 2.5}
+    - {code: PLY, name: Paris Gare de Lyon, kind: station, minutes: 15, cost: 2.5}
+    - {code: PBY, name: Paris Bercy (coaches), kind: coach, minutes: 20, cost: 2.5}
+
+brussels:
+  name: Brussels
+  country: BE
+  currency: EUR
+  terminals:
+    - {code: BRU, name: Brussels Airport, kind: airport, minutes: 25, cost: 11}
+    - {code: CRL, name: Charleroi (Ryanair, ~1h by coach), kind: airport, minutes: 70, cost: 17}
+    - {code: BMI, name: Brussels-Midi, kind: station, minutes: 10, cost: 2.6}
+
+prague:
+  name: Prague
+  country: CZ
+  currency: EUR
+  terminals:
+    - {code: PRG, name: Václav Havel Airport, kind: airport, minutes: 40, cost: 2.5}
+    - {code: PHL, name: Praha hlavní nádraží, kind: station, minutes: 10, cost: 1.2}
+
+madrid:
+  name: Madrid
+  country: ES
+  currency: EUR
+  terminals:
+    - {code: MAD, name: Madrid Barajas, kind: airport, minutes: 35, cost: 5}
+    - {code: MAT, name: Madrid Atocha, kind: station, minutes: 10, cost: 1.5}
+
+lisbon:
+  name: Lisbon
+  country: PT
+  currency: EUR
+  terminals:
+    - {code: LIS, name: Lisbon Airport, kind: airport, minutes: 30, cost: 2}
+
+rome:
+  name: Rome
+  country: IT
+  currency: EUR
+  terminals:
+    - {code: FCO, name: Fiumicino, kind: airport, minutes: 40, cost: 14}
+    - {code: CIA, name: Ciampino, kind: airport, minutes: 50, cost: 7}
+
+milan:
+  name: Milan
+  country: IT
+  currency: EUR
+  terminals:
+    - {code: MXP, name: Malpensa, kind: airport, minutes: 55, cost: 13}
+    - {code: LIN, name: Linate, kind: airport, minutes: 25, cost: 2.5}
+    - {code: BGY, name: Bergamo (Ryanair), kind: airport, minutes: 60, cost: 10}
+
+munich:
+  name: Munich
+  country: DE
+  currency: EUR
+  terminals:
+    - {code: MUC, name: Munich Airport, kind: airport, minutes: 45, cost: 13}
+
+vienna:
+  name: Vienna
+  country: AT
+  currency: EUR
+  terminals:
+    - {code: VIE, name: Vienna Airport, kind: airport, minutes: 25, cost: 4.5}
+
+copenhagen:
+  name: Copenhagen
+  country: DK
+  currency: EUR
+  terminals:
+    - {code: CPH, name: Copenhagen Airport, kind: airport, minutes: 20, cost: 5}

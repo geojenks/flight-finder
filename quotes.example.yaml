@@ -1,0 +1,9 @@
+# Prices you've found yourself (any site). Use with:
+#   flightfinder search trips/my-trip.yaml --quotes quotes.yaml
+# `from` / `to`: a terminal code (BRS, STN, STP...) or a place key (berlin).
+# mode defaults to flight; duration is terminal to terminal.
+
+- {from: BRS, to: BER, date: 2026-10-26, price: 46, currency: GBP, carrier: easyJet,
+   depart: "06:45", arrive: "09:40", duration: 1h55, url: https://www.easyjet.com}
+- {from: berlin, to: amsterdam, date: 2026-10-28, price: 39, currency: EUR,
+   mode: train, carrier: ICE via Hamburg, duration: 7h, url: https://int.bahn.de}
