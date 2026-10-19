@@ -1,0 +1,20 @@
+# Variant: Berlin first (Tue 27), then Amsterdam, then Barcelona.
+# The Berlin->Amsterdam European Sleeper runs Tue/Thu/Sun nights only.
+#
+#   flightfinder search trips/2026-10-berlin-first.yaml
+
+name: Berlin first, then Amsterdam, then Barcelona (late Oct 2026)
+currency: GBP
+travellers: 1
+value_of_time: 10
+hotel_night: 70
+start:
+  from: [bristol, london]
+  depart: 2026-10-27
+stops:
+  - {place: berlin, arrive: 2026-10-27, depart: [2026-10-28, 2026-10-29]}
+  - {place: amsterdam, nights: 0-3, depart: [2026-10-30, 2026-10-31]}
+  - {place: barcelona}
+end:
+  to: [bristol, london]
+  depart: [2026-11-05, 2026-11-06]
